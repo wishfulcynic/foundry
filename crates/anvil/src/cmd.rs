@@ -1,4 +1,5 @@
 use crate::{
+
     AccountGenerator, CHAIN_ID, EthereumHardfork, NodeConfig,
     config::{DEFAULT_MNEMONIC, ForkChoice},
     eth::{EthApi, backend::db::SerializableState, pool::transactions::TransactionOrder},
@@ -597,11 +598,15 @@ pub struct AnvilEvmArgs {
     pub memory_limit: Option<u64>,
 
     /// Enable Odyssey features
+    
     #[arg(long, alias = "alphanet")]
     pub odyssey: bool,
+    
 }
 
+
 /// Resolves an alias passed as fork-url to the matching url defined in the rpc_endpoints section
+
 /// of the project configuration file.
 /// Does nothing if the fork-url is not a configured alias.
 impl AnvilEvmArgs {
@@ -684,13 +689,18 @@ impl Future for PeriodicStateDumper {
                         this.interval.reset();
                     }
                     Poll::Pending => {
+
+                        
                         this.in_progress_dump = Some(flush);
                         return Poll::Pending;
+                        
+     
                     }
                 }
             }
 
             if this.interval.poll_tick(cx).is_ready() {
+
                 let api = this.api.clone();
                 let path = this.dump_state.clone().expect("exists; see above");
                 this.in_progress_dump =
@@ -736,6 +746,7 @@ impl StateFile {
 }
 
 /// Represents the input URL for a fork with an optional trailing block number:
+
 /// `http://localhost:8545@1000000`
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ForkUrl {
@@ -773,6 +784,7 @@ impl FromStr for ForkUrl {
         }
         Ok(Self { url: s.to_string(), block: None })
     }
+
 }
 
 /// Clap's value parser for genesis. Loads a genesis.json file.
@@ -782,6 +794,7 @@ fn read_genesis_file(path: &str) -> Result<Genesis, String> {
 
 fn duration_from_secs_f64(s: &str) -> Result<Duration, String> {
     let s = s.parse::<f64>().map_err(|e| e.to_string())?;
+    
     if s == 0.0 {
         return Err("Duration must be greater than 0".to_string());
     }
@@ -828,6 +841,7 @@ mod tests {
         let args: NodeArgs = NodeArgs::parse_from(["anvil", "--hardfork", "berlin"]);
         let config = args.into_node_config().unwrap();
         assert_eq!(config.hardfork, Some(EthereumHardfork::Berlin.into()));
+        
     }
 
     #[test]
@@ -860,6 +874,7 @@ mod tests {
     }
 
     #[test]
+
     fn can_parse_prune_config() {
         let args: NodeArgs = NodeArgs::parse_from(["anvil", "--prune-history"]);
         assert!(args.prune_history.is_some());
@@ -874,6 +889,7 @@ mod tests {
         assert_eq!(args.max_persisted_states, (Some(500)));
     }
 
+    
     #[test]
     fn can_parse_disable_block_gas_limit() {
         let args: NodeArgs = NodeArgs::parse_from(["anvil", "--disable-block-gas-limit"]);
@@ -920,6 +936,7 @@ mod tests {
 
         unsafe { env::set_var("ANVIL_IP_ADDR", "1.1.1.1") };
         let args = NodeArgs::parse_from(["anvil"]);
+        
         assert_eq!(args.host, vec!["1.1.1.1".parse::<IpAddr>().unwrap()]);
 
         unsafe { env::set_var("ANVIL_IP_ADDR", "::1,1.1.1.1,2.2.2.2") };
@@ -930,3 +947,4 @@ mod tests {
         );
     }
 }
+
